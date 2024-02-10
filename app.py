@@ -4,16 +4,16 @@ import os
 app = Flask(_name_)
 
 @app.route('/')
-@app.route('/<filename>')
-def display_file(filename='file1'):
-    filename += '.txt'  # Append the file extension
+@app.route('/<selected_file>')
+def display_selected_file(selected_file='file1'):
+    selected_file += '.txt'  # Append the file extension
     start_line = request.args.get('start_line', type=int)
     end_line = request.args.get('end_line', type=int)
     
     try:
-        encoding = get_file_encoding(filename)
-        with open(filename, 'r', encoding=encoding) as file:
-            lines = file.readlines()
+        selected_encoding = determine_file_encoding(selected_file)
+        with open(selected_file, 'r', encoding=selected_encoding) as file_content:
+            lines = file_content.readlines()
             if start_line is not None and end_line is not None:
                 lines = lines[start_line - 1:end_line]
             elif start_line is not None:
@@ -22,15 +22,15 @@ def display_file(filename='file1'):
                 lines = lines[:end_line]
             content = ''.join(lines)
             return render_template('file_display.html', content=content)
-    except Exception as e:
-        return render_template('error.html', error=str(e))
+    except Exception as error:
+        return render_template('error.html', error_message=str(error))
 
-def get_file_encoding(filename):
-    if filename == 'file2.txt':
+def determine_file_encoding(selected_file):
+    if selected_file == 'file2.txt':
         return 'utf-16be'
-    elif filename == 'file3.txt':
+    elif selected_file == 'file3.txt':
         return 'us-ascii'
-    elif filename == 'file4.txt':
+    elif selected_file == 'file4.txt':
         return 'utf-16le'
     else:
         return 'utf-8'
