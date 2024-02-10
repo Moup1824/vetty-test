@@ -1,0 +1,38 @@
+from flask import Flask, render_template, request
+import os
+
+app = Flask(__name__)
+
+@app.route('/file_content', methods=['GET'])
+def get_file_content():
+    try:
+        # Get file name from the URL variable part, default to file1.txt
+        file_name = request.args.get('file_name', 'file1.txt')
+        
+        # Get start and end line numbers from URL query parameters
+        start_line = int(request.args.get('start_line', 1))
+        end_line = int(request.args.get('end_line', None))
+        
+        # Read file content
+        file_path = os.path.join('files', file_name)
+        with open(file_path, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
+        
+        # Filter lines based on start and end line numbers
+        if end_line is not None:
+            lines = lines[start_line-1:end_line]
+        else:
+            lines = lines[start_line-1:]
+        
+        # Join lines to form content
+        content = ''.join(lines)
+        
+        # Render HTML page with the file content
+        return render_template('file_content.html', content=content)
+    
+    except Exception as e:
+        # Handle exceptions gracefully by rendering an error page
+        return render_template('error.html', error=str(e))
+
+if __name__ == '__main__':
+    app.run(debug=True)
