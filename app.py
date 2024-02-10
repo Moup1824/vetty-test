@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 import os
 
-app = Flask(__name__)
+app = Flask(_name_)
 
 @app.route('/')
 @app.route('/<filename>')
@@ -35,6 +35,5 @@ def get_file_encoding(filename):
     else:
         return 'utf-8'
 
-if __name__ == '__main__':
+if _name_ == '_main_':
     app.run(debug=True)
-
